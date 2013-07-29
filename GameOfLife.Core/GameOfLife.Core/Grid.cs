@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GameOfLife.Core
 {
@@ -9,7 +7,7 @@ namespace GameOfLife.Core
         public readonly Int32 XSize;
         public readonly Int32 YSize;
 
-        public List<Cell> Cells { get; set; }
+        public Cell[][] Cells { get; set; }
 
         public Grid(Int32 xSize, Int32 ySize)
         {
@@ -24,27 +22,32 @@ namespace GameOfLife.Core
 
         private void InitializeGrid()
         {
-            Cells = new List<Cell>();
             var randomizer = new Random();
+            Cells = new Cell[XSize][];
 
             for (var x = 0; x < XSize; x++)
+            {
+                Cells[x] = new Cell[YSize];
+
                 for (var y = 0; y < YSize; y++)
-                    Cells.Add(new Cell(x, y, Convert.ToBoolean(randomizer.Next(0, 2))));
+                    Cells[x][y] = new Cell(x, y, Convert.ToBoolean(randomizer.Next(0, 2)));
+            }
         }
 
-        public void SetLivingValues(IEnumerable<Boolean> newValues)
+        public void SetLivingValues(Boolean[][] newValues)
         {
-            var count = newValues.Count();
-            for (var i = 0; i < count; i++)
-                Cells[i].AliveNextGeneration = newValues.ElementAt(i);
+            for (var x = 0; x < XSize; x++)
+                for (var y = 0; y < YSize; y++)
+                    Cells[x][y].AliveNextGeneration = newValues[x][y];
 
             Tick();
         }
 
         public void Tick()
         {
-            foreach (var cell in Cells)
-                cell.Tick();
+            for (var x = 0; x < XSize; x++)
+                for (var y = 0; y < YSize; y++)
+                    Cells[x][y].Tick();
         }
     }
 }

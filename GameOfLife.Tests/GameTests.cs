@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using GameOfLife.Core;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ namespace GameOfLife.Tests
     [TestFixture]
     public class GameTests
     {
+        private const Int32 MAX_TEST_SIZE = 1000;
         [Test]
         public void RandomGridSize()
         {
@@ -52,25 +52,34 @@ namespace GameOfLife.Tests
         [Test]
         public void SetAllCells()
         {
-            var game = new Game(4, 4);
-            var aliveValues = new List<Boolean>();
+            var game = new Game(MAX_TEST_SIZE, MAX_TEST_SIZE);
+            var aliveValues = new Boolean[MAX_TEST_SIZE][];
 
-            for (var i = 0; i < game.Grid.Cells.Count; i++)
-                aliveValues.Add(true);
+            for (var x = 0; x < aliveValues.Length; x++)
+            {
+                aliveValues[x] = new Boolean[MAX_TEST_SIZE];
+                for (var y = 0; y < aliveValues[x].Length; y++)
+                    aliveValues[x][y] = true;
+            }
 
             game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells.All(c => c.Alive), Is.True);
+            for (var x = 0; x < MAX_TEST_SIZE; x++)
+                Assert.That(game.Grid.Cells[x].All(c => c.Alive), Is.True);
         }
 
         [Test]
         public void SetAllCellsDoesNotIncrementGeneration()
         {
-            var game = new Game(4, 4);
-            var aliveValues = new List<Boolean>();
+            var game = new Game(MAX_TEST_SIZE, MAX_TEST_SIZE);
+            var aliveValues = new Boolean[MAX_TEST_SIZE][];
 
-            for (var i = 0; i < game.Grid.Cells.Count; i++)
-                aliveValues.Add(true);
+            for (var x = 0; x < aliveValues.Length; x++)
+            {
+                aliveValues[x] = new Boolean[MAX_TEST_SIZE];
+                for (var y = 0; y < aliveValues[x].Length; y++)
+                    aliveValues[x][y] = true;
+            }
 
             game.SetLivingValues(aliveValues);
 
@@ -78,11 +87,39 @@ namespace GameOfLife.Tests
         }
 
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void CannotSetAllCellsIfWrongNumberOfValues()
+        public void CannotSetAllCellsIfNotRectangularGrid()
         {
             var game = new Game(4, 4);
-            var aliveValues = new List<Boolean>();
-            aliveValues.Add(true);
+            var aliveValues = new Boolean[4][];
+            aliveValues[0] = new Boolean[4];
+            aliveValues[1] = new Boolean[3];
+            aliveValues[2] = new Boolean[4];
+            aliveValues[3] = new Boolean[4];
+
+            game.SetLivingValues(aliveValues);
+        }
+
+        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void CannotSetAllCellsIfWrongXSize()
+        {
+            var game = new Game(4, 4);
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[4];
+            aliveValues[1] = new Boolean[4];
+            aliveValues[2] = new Boolean[4];
+
+            game.SetLivingValues(aliveValues);
+        }
+
+        [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void CannotSetAllCellsIfWrongYSize()
+        {
+            var game = new Game(4, 4);
+            var aliveValues = new Boolean[4][];
+            aliveValues[0] = new Boolean[3];
+            aliveValues[1] = new Boolean[3];
+            aliveValues[2] = new Boolean[3];
+            aliveValues[3] = new Boolean[3];
 
             game.SetLivingValues(aliveValues);
         }
@@ -107,302 +144,319 @@ namespace GameOfLife.Tests
         public void AnyLiveCellWith0LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {false, false, false,
-                                                   false, true, false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, false };
+            aliveValues[1] = new Boolean[3] { false, true,  false };
+            aliveValues[2] = new Boolean[3] { false, false, false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            Assert.That(game.Grid.Cells.Any(c => c.Alive), Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith1LiveNeighborDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {false, false, false,
-                                                   true,  true,  false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true  };
+            aliveValues[1] = new Boolean[3] { false, true,  false };
+            aliveValues[2] = new Boolean[3] { false, false, false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            Assert.That(game.Grid.Cells.Any(c => c.Alive), Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith2LiveNeighborsLives()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  false, false,
-                                                   true,  true,  false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true  };
+            aliveValues[1] = new Boolean[3] { false, true,  true  };
+            aliveValues[2] = new Boolean[3] { false, false, false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.True);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.True);
         }
 
         [Test]
         public void AnyLiveCellWith3LiveNeighborsLives()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  false, false,
-                                                   true,  true,  true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, true,  true };
+            aliveValues[2] = new Boolean[3] { false, false, true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.True);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.True);
         }
 
         [Test]
         public void AnyLiveCellWith4NeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  false,
-                                                   true,  true,  true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, true,  true };
+            aliveValues[2] = new Boolean[3] { false, true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith5NeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  true,  true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, true,  true };
+            aliveValues[2] = new Boolean[3] { true,  true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith6NeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  true,  true,
-                                                   true,  false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { true,  true,  true };
+            aliveValues[2] = new Boolean[3] { true,  true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith7NeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  true,  true,
-                                                   true,  false, true};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { true, false, true };
+            aliveValues[1] = new Boolean[3] { true, true,  true };
+            aliveValues[2] = new Boolean[3] { true, true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyLiveCellWith8NeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  true,  true,
-                                                   true,  true,  true};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { true, true, true };
+            aliveValues[1] = new Boolean[3] { true, true, true };
+            aliveValues[2] = new Boolean[3] { true, true, true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith0LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {false, false, false,
-                                                   false, false, false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, false };
+            aliveValues[1] = new Boolean[3] { false, false, false };
+            aliveValues[2] = new Boolean[3] { false, false, false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith1LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  false, false,
-                                                   false, false, false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, false, false };
+            aliveValues[2] = new Boolean[3] { false, false, false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith2LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  false, false,
-                                                   true,  false, false,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, false, false };
+            aliveValues[2] = new Boolean[3] { false, true,  false };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith3LiveNeighborsLives()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  false, false,
-                                                   true,  false, true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, false, true };
+            aliveValues[2] = new Boolean[3] { false, false, true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.True);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.True);
         }
 
         [Test]
         public void AnyDeadCellWith4LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  false,
-                                                   true,  false, true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, false, true };
+            aliveValues[2] = new Boolean[3] { false, true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith5LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  false, true,
-                                                   false, false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { false, false, true };
+            aliveValues[2] = new Boolean[3] { true,  true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith6LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  false, true,
-                                                   true,  false, false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { false, false, true };
+            aliveValues[1] = new Boolean[3] { true,  false, true };
+            aliveValues[2] = new Boolean[3] { true,  true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith7LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  false, true,
-                                                   true,  true,  false};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { true, false, true };
+            aliveValues[1] = new Boolean[3] { true, false, true };
+            aliveValues[2] = new Boolean[3] { true, true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void AnyDeadCellWith8LiveNeighborsDies()
         {
             var game = new Game(3, 3);
-            var aliveValues = new List<Boolean>() {true,  true,  true,
-                                                   true,  false, true,
-                                                   true,  true,  true};
+            var aliveValues = new Boolean[3][];
+            aliveValues[0] = new Boolean[3] { true, true,  true };
+            aliveValues[1] = new Boolean[3] { true, false, true };
+            aliveValues[2] = new Boolean[3] { true, true,  true };
 
             game.SetLivingValues(aliveValues);
             game.Tick();
 
-            var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
-
-            Assert.That(cell.Alive, Is.False);
+            Assert.That(game.Grid.Cells[1][1].Alive, Is.False);
         }
 
         [Test]
         public void NotNeighbors()
         {
             var game = new Game(5, 5);
-            var aliveValues = new List<Boolean>() {true,  true,  true,  true,  true,
-                                                   true,  false, false, false, true,
-                                                   true,  false, true,  false, true,
-                                                   true,  false, false, false, true,
-                                                   true,  true,  true,  true,  true};
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+            for (var x1 = 0; x1 < 5; x1++)
+            {
+                for (var y1 = 0; y1 < 5; y1++)
+                {
+                    if (y1 == 2 && x1 == 2)
+                        continue;
 
-            var cell = game.Grid.Cells.First(c => c.X == 2 && c.Y == 2);
+                    if (x1 != 0 && x1 != 4 && y1 != 0 && y1 != 4)
+                        continue;
 
-            Assert.That(cell.Alive, Is.False);
+                    for (var x2 = x1; x2 < 5; x2++)
+                    {
+                        for (var y2 = y1; y2 < 5; y2++)
+                        {
+                            if (y2 == 2 && x2 == 2)
+                                continue;
+
+                            if (x2 != 0 && x2 != 4 && y2 != 0 && y2 != 4)
+                                continue;
+
+                            if (y2 == y1 && x2 == x1)
+                                continue;
+
+                            var aliveValues = new Boolean[5][];
+                            aliveValues[0] = new Boolean[5] { false, false, false, false, false };
+                            aliveValues[1] = new Boolean[5] { false, false, false, false, false };
+                            aliveValues[2] = new Boolean[5] { false, false, true,  false, false };
+                            aliveValues[3] = new Boolean[5] { false, false, false, false, false };
+                            aliveValues[4] = new Boolean[5] { false, false, false, false, false };
+
+                            aliveValues[x1][y1] = true;
+                            aliveValues[x2][y2] = true;
+
+                            game.SetLivingValues(aliveValues);
+                            game.Tick();
+
+                            var failMessage = String.Format("p1: ({0},{1})\np2: ({2},{3})", x1, y1, x2, y2);
+                            Assert.That(game.Grid.Cells[2][2].Alive, Is.False, failMessage);
+                        }
+                    }
+                }
+            }
         }
 
         [Test]
@@ -410,31 +464,47 @@ namespace GameOfLife.Tests
         {
             var game = new Game(3, 3);
 
-            for (var i = 0; i < 8; i++)
+            for (var x1 = 0; x1 < 3; x1++)
             {
-                if (i == 4)
-                    continue;
-
-                for (var j = i + 1; j < 9; j++)
+                for (var y1 = 0; y1 < 3; y1++)
                 {
-                    if (j == 4)
+                    if (y1 == 1 && x1 == 1)
                         continue;
 
-                    var aliveValues = new List<Boolean>() {false, false, false,
-                                                           false, true,  false,
-                                                           false, false, false};
+                    for (var x2 = x1; x2 < 3; x2++)
+                    {
+                        for (var y2 = y1; y2 < 3; y2++)
+                        {
+                            if (y2 == 1 && x2 == 1)
+                                continue;
 
-                    aliveValues[i] = true;
-                    aliveValues[j] = true;
+                            if (y2 == y1 && x2 == x1)
+                                continue;
 
-                    game.SetLivingValues(aliveValues);
-                    game.Tick();
+                            var aliveValues = new Boolean[3][];
+                            aliveValues[0] = new Boolean[3] { false, false, false };
+                            aliveValues[1] = new Boolean[3] { false, true,  false };
+                            aliveValues[2] = new Boolean[3] { false, false, false };
 
-                    var cell = game.Grid.Cells.First(c => c.X == 1 && c.Y == 1);
+                            aliveValues[x1][y1] = true;
+                            aliveValues[x2][y2] = true;
 
-                    Assert.That(cell.Alive, Is.True);
+                            game.SetLivingValues(aliveValues);
+                            game.Tick();
+
+                            var failMessage = String.Format("p1: ({0},{1})\np2: ({2},{3})", x1, y1, x2, y2);
+                            Assert.That(game.Grid.Cells[1][1].Alive, Is.True, failMessage);
+                        }
+                    }
                 }
             }
+        }
+
+        [Test]
+        public void SingleTickTimeOf1000x1000()
+        {
+            var game = new Game(1000, 1000);
+            game.Execute(1);
         }
     }
 }
