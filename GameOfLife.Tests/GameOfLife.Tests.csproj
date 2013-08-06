@@ -55,11 +55,11 @@
   <ItemGroup>
     <Compile Include="GameTests.cs" />
     <Compile Include="GridTests.cs" />
-    <Compile Include="CellTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GameOfLife.Core\GameOfLife.Core\GameOfLife.Core.csproj">
+    <ProjectReference Include="..\GameOfLife.Core\GameOfLife.Core.csproj">
       <Project>{9be7a6af-7a92-498e-9015-d88e0bcdccc7}</Project>
       <Name>GameOfLife.Core</Name>
     </ProjectReference>
