@@ -13,7 +13,12 @@
             RenderContextType="DIBSection" FrameRate="20" RenderTransformOrigin="0,0" />
         <Button Name="RunButton" Click="RunButton_Click" Content="Start" Margin="0,0,90,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
         <Button Content="Reset" Click="Reset_Click" Margin="0,0,10,10" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="75"/>
-        <Label Content="Edge size:" Margin="10,0,0,10" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="62" Foreground="White"/>
-        <TextBox Name="edgeSizeTextBox" Text="{Binding EdgeSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalAlignment="Left" Margin="77,0,0,10" TextWrapping="Wrap" Width="44" Height="23" VerticalAlignment="Bottom"/>
+        <Label Content="Edge size:" Margin="10,0,0,8" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="62" Foreground="White"/>
+        <TextBox Text="{Binding Game.EdgeSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="77,0,0,9" TextWrapping="Wrap" Width="32" Height="23" VerticalAlignment="Bottom"/>
+        <TextBox Text="{Binding Game.MinLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="211,0,0,9" TextWrapping="Wrap" Width="27" Height="23" VerticalAlignment="Bottom"/>
+        <TextBox Text="{Binding Game.MaxLive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="243,0,0,9" TextWrapping="Wrap" Width="25" Height="23" VerticalAlignment="Bottom"/>
+        <TextBox Text="{Binding Game.MinBorn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="273,0,0,9" TextWrapping="Wrap" Width="25" Height="23" VerticalAlignment="Bottom"/>
+        <TextBox Text="{Binding Game.MaxBorn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="303,0,0,9" TextWrapping="Wrap" Width="27" Height="23" VerticalAlignment="Bottom"/>
+        <Label Content="Rules (L/B):" Margin="137,0,0,8" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="69" Foreground="White"/>
     </Grid>
 </Window>

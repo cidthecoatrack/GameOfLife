@@ -15,47 +15,25 @@ namespace GameOfLife.UI
         private const Int32 CameraMoveSensitivity = 1;
         private const Int32 CameraRotationSensitivity = 240;
 
-        private Int32 gridOffset { get { return edgeSize / 2; } }
+        private Int32 gridOffset { get { return Game.EdgeSize / 2; } }
 
         private Timer timer;
         private OpenGL gl;
-        private Game game;
         private Camera camera;
-        private Int32 edgeSize;
 
-        public Int32 EdgeSize 
-        {
-            get { return edgeSize; }
-            set
-            {
-                if (value >= 1 && value <= 100)
-                {
-                    edgeSize = value;
-                    game = new Game(value);
-                    camera.SetZPosition(value + gridOffset);
-                }
-            }
-        }
+        public Game Game { get; set; }
 
         public MainWindow()
         {
-            edgeSize = 15;
-
             InitializeComponent();
             timer = new Timer();
             timer.Interval = TickDelay;
-            timer.Elapsed += (s, a) => game.Tick();
+            timer.Elapsed += (s, a) => Game.Tick();
             camera = new Camera();
 
-            game = new Game(edgeSize);
+            Game = new Game();
 
             DataContext = this;
-        }
-
-        private void StartSimulation()
-        {
-            game = new Game(EdgeSize);
-            PauseOrResumeSimulation();
         }
 
         private void openGLControl_OpenGLDraw(Object sender, OpenGLEventArgs args)
@@ -68,11 +46,11 @@ namespace GameOfLife.UI
 
         private void DrawLiveCells()
         {
-            var cells = game.Grid.Cells;
+            var cells = Game.Grid.Cells;
 
-            for (var x = 0; x < EdgeSize; x++)
-                for (var y = 0; y < EdgeSize; y++)
-                    for (var z = 0; z < EdgeSize; z++)
+            for (var x = 0; x < Game.EdgeSize; x++)
+                for (var y = 0; y < Game.EdgeSize; y++)
+                    for (var z = 0; z < Game.EdgeSize; z++)
                         if (cells[x][y][z])
                             DrawCube(x - gridOffset, y - gridOffset, z - gridOffset);
         }
@@ -161,7 +139,7 @@ namespace GameOfLife.UI
 
         private void openGLControl_OpenGLInitialized(Object sender, OpenGLEventArgs args)
         {
-            camera.SetZPosition(EdgeSize + gridOffset);
+            camera.SetZPosition(Game.EdgeSize + gridOffset);
             gl = openGLControl.OpenGL;
             gl.ClearColor(0, 0, 0, 0);
         }
@@ -173,9 +151,6 @@ namespace GameOfLife.UI
 
         private void mainWindow_KeyDown(Object sender, KeyEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.Enter))
-                StartSimulation();
-
             if (Keyboard.IsKeyDown(Key.Space))
                 PauseOrResumeSimulation();
 
@@ -206,23 +181,34 @@ namespace GameOfLife.UI
         private void PauseOrResumeSimulation()
         {
             if (timer.Enabled)
-            {
-                timer.Stop();
-                RunButton.Content = "Start";
-            }
+                PauseSimulation();
             else
-            {
-                timer.Start();
-                RunButton.Content = "Pause";
-            }
+                ResumeSimulation();
+        }
+
+        private void PauseSimulation()
+        {
+            timer.Stop();
+            RunButton.Content = "Start";
+        }
+
+        private void ResumeSimulation()
+        {
+            timer.Start();
+            RunButton.Content = "Pause";
         }
 
         private void Reset_Click(Object sender, RoutedEventArgs e)
         {
+            ResetGame();
+        }
+
+        private void ResetGame()
+        {
             timer.Stop();
             RunButton.Content = "Start";
-            game = new Game(EdgeSize);
-            camera.SetZPosition(EdgeSize + gridOffset);
+            Game.Reset();
+            camera.SetZPosition(Game.EdgeSize + gridOffset);
         }
     }
 }
