@@ -37,10 +37,10 @@ namespace GameOfLife.Core
 
         private void InitializeRules()
         {
-            MinLive = 6;
-            MaxLive = 10;
-            MinBorn = 9;
-            MaxBorn = 10;
+            MinLive = 2;
+            MaxLive = 3;
+            MinBorn = 3;
+            MaxBorn = 3;
         }
 
         public Game(Int32 edgeSize)
