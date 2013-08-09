@@ -1,12 +1,14 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace GameOfLife.Core
 {
-    public class Game
+    public class Game : INotifyPropertyChanged
     {
+        private const Int32 maxSize = 100;
+        private const Int32 minSize = 1;
+
         public Grid Grid { get; private set; }
-        public Int32 Generation { get; private set; }
-        public Boolean Running { get; private set; }
         public Int32 MinLive { get; set; }
         public Int32 MaxLive { get; set; }
         public Int32 MinBorn { get; set; }
@@ -17,7 +19,7 @@ namespace GameOfLife.Core
             get { return edgeSize; }
             set
             {
-                if (value >= 1 && value <= 100)
+                if (value >= minSize && value <= maxSize)
                 {
                     edgeSize = value;
                     Reset();
@@ -26,7 +28,38 @@ namespace GameOfLife.Core
         }
 
 
+        public Int32 Generation
+        {
+            get { return generation; }
+            set
+            {
+                generation = value;
+                OnPropertyChanged("Generation");
+            }
+        }
+
+        public Boolean NotRunning
+        {
+            get { return notRunning; }
+            set
+            {
+                notRunning = value;
+                OnPropertyChanged("NotRunning");
+            }
+        }
+
         private Int32 edgeSize;
+        private Int32 generation;
+        private Boolean notRunning;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(String name)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+                handler(this, new PropertyChangedEventArgs(name));
+        }
 
         public Game()
         {
@@ -54,7 +87,7 @@ namespace GameOfLife.Core
         {
             Grid = new Grid(edgeSize);
             Generation = 1;
-            Running = true;
+            NotRunning = true;
         }
 
         public void SetLivingValues(Boolean[][][] newValues)
@@ -77,7 +110,7 @@ namespace GameOfLife.Core
 
         public void Tick()
         {
-            Running = false;
+            NotRunning = true;
 
             for (var x = 0; x < Grid.EdgeSize; x++)
             {
@@ -93,12 +126,12 @@ namespace GameOfLife.Core
                             Grid.NextGeneration[x][y][z] = livingNeighbors >= MinBorn && livingNeighbors <= MaxBorn;
 
                         if (Grid.Cells[x][y][z] != Grid.NextGeneration[x][y][z])
-                            Running = true;
+                            NotRunning = false;
                     }
                 }
             }
 
-            if (Running)
+            if (!NotRunning)
             {
                 Grid.Tick();
                 Generation++;

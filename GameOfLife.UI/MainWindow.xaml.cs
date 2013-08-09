@@ -11,27 +11,30 @@ namespace GameOfLife.UI
 {
     public partial class MainWindow : Window
     {
-        private const Int32 TickDelay = 250;
         private const Int32 CameraMoveSensitivity = 1;
         private const Int32 CameraRotationSensitivity = 240;
 
         private Int32 gridOffset { get { return Game.EdgeSize / 2; } }
+        private Int32 timerInterval { get { return Game.EdgeSize * 10; } }
 
         private Timer timer;
         private OpenGL gl;
         private Camera camera;
+        private Int32 currentEdgeSize;
 
         public Game Game { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            timer = new Timer();
-            timer.Interval = TickDelay;
-            timer.Elapsed += (s, a) => Game.Tick();
-            camera = new Camera();
 
+            camera = new Camera();
             Game = new Game();
+            currentEdgeSize = Game.EdgeSize;
+
+            timer = new Timer();
+            timer.Elapsed += (s, a) => Game.Tick();
+            timer.Interval = timerInterval;
 
             DataContext = this;
         }
@@ -135,6 +138,12 @@ namespace GameOfLife.UI
                 camera.Up.Z);
 
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
+
+            if (currentEdgeSize != Game.EdgeSize)
+            {
+                currentEdgeSize = Game.EdgeSize;
+                camera.SetZPosition(Game.EdgeSize + gridOffset);
+            }
         }
 
         private void openGLControl_OpenGLInitialized(Object sender, OpenGLEventArgs args)
@@ -194,6 +203,7 @@ namespace GameOfLife.UI
 
         private void ResumeSimulation()
         {
+            timer.Interval = timerInterval;
             timer.Start();
             RunButton.Content = "Pause";
         }

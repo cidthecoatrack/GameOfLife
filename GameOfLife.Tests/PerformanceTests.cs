@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using GameOfLife.Core;
 using NUnit.Framework;
 
@@ -24,6 +24,20 @@ namespace GameOfLife.Tests
         }
 
         [Test]
+        public void SingleTickTimeOf25x25x25()
+        {
+            game = new Game(25);
+            RunGame();
+        }
+
+        [Test]
+        public void SingleTickTimeOfDefaultSize()
+        {
+            game = new Game();
+            RunGame();
+        }
+
+        [Test]
         public void SingleTickTimeOf10x10x10()
         {
             game = new Game(10);
@@ -39,11 +53,11 @@ namespace GameOfLife.Tests
 
         private void RunGame()
         {
-            var startTime = DateTime.Now;
+            var stopwatch = Stopwatch.StartNew();
             game.Tick();
-            var duration = DateTime.Now.Subtract(startTime).Milliseconds;
+            stopwatch.Stop();
 
-            Assert.That(duration, Is.LessThan(1000));
+            Assert.Pass(stopwatch.ElapsedMilliseconds.ToString());
         }
     }
 }

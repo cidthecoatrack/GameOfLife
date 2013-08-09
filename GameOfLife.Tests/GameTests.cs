@@ -11,10 +11,10 @@ namespace GameOfLife.Tests
         private const Int32 MAX_TEST_SIZE = 100;
 
         [Test]
-        public void RandomGridSize()
+        public void DefaultGridSize()
         {
             var game = new Game();
-            Assert.That(game.Grid.EdgeSize, Is.AtLeast(1));
+            Assert.That(game.Grid.EdgeSize, Is.EqualTo(15));
         }
 
         [Test, ExpectedException(typeof(IndexOutOfRangeException))]
@@ -158,658 +158,182 @@ namespace GameOfLife.Tests
         [Test]
         public void TickIncreasesGeneration()
         {
-            var game = new Game(1);
+            var game = new Game();
             game.Tick();
 
             Assert.That(game.Generation, Is.EqualTo(2));
         }
 
         [Test]
-        public void AnyLiveCellWith00LiveNeighborsDies()
+        public void SetMinimumLiveValue()
         {
             var game = new Game(3);
+            game.MinLive = 1;
+
             var aliveValues = MakeNeighbors(true, 0);
-
             game.SetLivingValues(aliveValues);
-            game.Tick();
 
+            game.Tick();
             Assert.That(game.Grid.Cells[1][1][1], Is.False);
         }
 
         [Test]
-        public void AnyLiveCellWith01LiveNeighborDies()
+        public void SetMaximumLiveValue()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 1);
+            game.MaxLive = 7;
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith02LiveNeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 2);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith03LiveNeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 3);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith04NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 4);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith05NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 5);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith06NeighborsLives()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 6);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
-        }
-
-        [Test]
-        public void AnyLiveCellWith07NeighborsLives()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 7);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
-        }
-
-        [Test]
-        public void AnyLiveCellWith08NeighborsLives()
-        {
-            var game = new Game(3);
             var aliveValues = MakeNeighbors(true, 8);
-
             game.SetLivingValues(aliveValues);
+
             game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
-        }
-
-        [Test]
-        public void AnyLiveCellWith09NeighborsLives()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 9);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
-        }
-
-        [Test]
-        public void AnyLiveCellWith10NeighborsLives()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 10);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
-        }
-
-        [Test]
-        public void AnyLiveCellWith11NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 11);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
             Assert.That(game.Grid.Cells[1][1][1], Is.False);
         }
 
         [Test]
-        public void AnyLiveCellWith12NeighborsDies()
+        public void SetMinimumBirthValue()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 12);
+            game.MinBorn = 0;
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith13NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 13);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith14NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 14);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith15NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 15);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith16NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 16);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith17NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 17);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith18NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 18);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith19NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 19);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith20NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 20);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith21NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 21);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith22NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 22);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith23NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 23);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith24NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 24);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith25NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 25);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyLiveCellWith26NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(true, 26);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith00LiveNeighborsDies()
-        {
-            var game = new Game(3);
             var aliveValues = MakeNeighbors(false, 0);
-
             game.SetLivingValues(aliveValues);
-            game.Tick();
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
+            game.Tick();
+            Assert.That(game.Grid.Cells[1][1][1], Is.True);
         }
 
         [Test]
-        public void AnyDeadCellWith01LiveNeighborDies()
+        public void SetMaximumBirthValue()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 1);
+            game.MaxBorn = 8;
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith02LiveNeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 2);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith03LiveNeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 3);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith04NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 4);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith05NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 5);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith06NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 6);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith07NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 7);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith08NeighborsDies()
-        {
-            var game = new Game(3);
             var aliveValues = MakeNeighbors(false, 8);
-
             game.SetLivingValues(aliveValues);
+
             game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith09NeighborsLives()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 9);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
             Assert.That(game.Grid.Cells[1][1][1], Is.True);
         }
 
         [Test]
-        public void AnyDeadCellWith10NeighborsLives()
+        public void Live()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 10);
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+            for (game.MinLive = 0; game.MinLive < 9; game.MinLive++)
+            {
+                for (game.MaxLive = game.MinLive; game.MaxLive < 9; game.MaxLive++)
+                {
+                    var neighbors = game.MinLive;
+                    while (neighbors <= game.MaxLive)
+                    {
+                        var aliveValues = MakeNeighbors(true, neighbors);
+                        game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.True);
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.True);
+
+                        neighbors++;
+                    }
+                }
+            }
         }
 
         [Test]
-        public void AnyDeadCellWith11NeighborsDies()
+        public void Die()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 11);
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+            for (game.MinLive = 0; game.MinLive < 9; game.MinLive++)
+            {
+                for (game.MaxLive = game.MinLive; game.MaxLive < 9; game.MaxLive++)
+                {
+                    var neighbors = 0;
+                    while (neighbors < game.MinLive)
+                    {
+                        var aliveValues = MakeNeighbors(true, neighbors);
+                        game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.False);
+
+                        neighbors++;
+                    }
+
+                    neighbors = game.MaxLive + 1;
+                    while (neighbors < 9)
+                    {
+                        var aliveValues = MakeNeighbors(true, neighbors);
+                        game.SetLivingValues(aliveValues);
+
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.False);
+
+                        neighbors++;
+                    }
+                }
+            }
         }
 
         [Test]
-        public void AnyDeadCellWith12NeighborsDies()
+        public void Born()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 12);
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+            for (game.MinBorn = 0; game.MinBorn < 9; game.MinBorn++)
+            {
+                for (game.MaxBorn = game.MinBorn; game.MaxBorn < 9; game.MaxBorn++)
+                {
+                    var neighbors = game.MinBorn;
+                    while (neighbors <= game.MaxBorn)
+                    {
+                        var aliveValues = MakeNeighbors(false, neighbors);
+                        game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.True);
+
+                        neighbors++;
+                    }
+                }
+            }
         }
 
         [Test]
-        public void AnyDeadCellWith13NeighborsDies()
+        public void StayDead()
         {
             var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 13);
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+            for (game.MinBorn = 0; game.MinBorn < 9; game.MinBorn++)
+            {
+                for (game.MaxBorn = game.MinBorn; game.MaxBorn < 9; game.MaxBorn++)
+                {
+                    var neighbors = 0;
+                    while (neighbors < game.MinBorn)
+                    {
+                        var aliveValues = MakeNeighbors(false, neighbors);
+                        game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.False);
 
-        [Test]
-        public void AnyDeadCellWith14NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 14);
+                        neighbors++;
+                    }
 
-            game.SetLivingValues(aliveValues);
-            game.Tick();
+                    neighbors = game.MaxBorn + 1;
+                    while (neighbors < 9)
+                    {
+                        var aliveValues = MakeNeighbors(false, neighbors);
+                        game.SetLivingValues(aliveValues);
 
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
+                        game.Tick();
+                        Assert.That(game.Grid.Cells[1][1][1], Is.False);
 
-        [Test]
-        public void AnyDeadCellWith15NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 15);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith16NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 16);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith17NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 17);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith18NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 18);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith19NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 19);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith20NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 20);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith21NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 21);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith22NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 22);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith23NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 23);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith24NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 24);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith25NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 25);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
-        }
-
-        [Test]
-        public void AnyDeadCellWith26NeighborsDies()
-        {
-            var game = new Game(3);
-            var aliveValues = MakeNeighbors(false, 26);
-
-            game.SetLivingValues(aliveValues);
-            game.Tick();
-
-            Assert.That(game.Grid.Cells[1][1][1], Is.False);
+                        neighbors++;
+                    }
+                }
+            }
         }
 
         private Boolean[][][] MakeNeighbors(Boolean coreIsAlive, Int32 numberOfLivingNeighbors)
@@ -849,6 +373,42 @@ namespace GameOfLife.Tests
             }
 
             return aliveValues;
+        }
+
+        [Test]
+        public void Running()
+        {
+            var game = new Game(1);
+
+            var aliveValues = new Boolean[1][][];
+            aliveValues[0] = new Boolean[1][];
+            aliveValues[0][0] = new Boolean[1] { true };
+            game.SetLivingValues(aliveValues);
+
+            game.Tick();
+            Assert.That(game.NotRunning, Is.False);
+
+            game.Tick();
+            Assert.That(game.NotRunning, Is.True);
+        }
+
+        [Test]
+        public void OnceNotRunningNeverStartsRunningAgain()
+        {
+            var game = new Game(1);
+
+            var aliveValues = new Boolean[1][][];
+            aliveValues[0] = new Boolean[1][];
+            aliveValues[0][0] = new Boolean[1] { false };
+            game.SetLivingValues(aliveValues);
+
+            var count = 0;
+            while (count < 1000000)
+            {
+                game.Tick();
+                Assert.That(game.NotRunning, Is.True);
+                count++;
+            }
         }
 
         [Test]
@@ -922,7 +482,7 @@ namespace GameOfLife.Tests
                         if (x1 == 1 && y1 == 1 && z1 == 1)
                             continue;
 
-                        var aliveValues = MakeNeighbors(true, 5);
+                        var aliveValues = MakeNeighbors(true, 1);
 
                         if (aliveValues[x1][y1][z1])
                             continue;
